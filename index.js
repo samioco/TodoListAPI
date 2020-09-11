@@ -4,14 +4,7 @@ var express = require('express'),
 var todoRoutes = require('./routes/todos');
 
 app.get('/', function(req, res){
-	// res.send("Hi Root route");
-	db.Todo.find()
-	.then(function(todos){
-		res.json(todos);
-	})
-	.catch(function(err){
-		res.send(err);
-	});
+	res.send("Hi Root route");
 });
 
 app.use('/api/todos', todoRoutes);
