@@ -11,14 +11,20 @@ $(document).ready(function() {
         }
     });
 
+	
 //     $('.list').on('click', 'li', function() {
 //         updateTodo($(this));
 //     });
 
-//     $('.list').on('click', 'span', function(e) {
-//         e.stopPropagation();
-//         removeTodo($(this).parent());
-//     });
+	// event delegation
+	// spans are not loaded on document.ready
+	// list is, attach to list
+    $('.list').on('click', 'span', function(e) {
+        console.log("Span CLICKED!");
+		
+		// e.stopPropagation();
+        removeTodo($(this).parent());
+    });
 });
 
 function addTodos(todos) {
@@ -58,18 +64,19 @@ function createTodo() {
 }
 
 function removeTodo(todo) {
-    var clickedId = todo.data('id');
-    var deleteUrl = '/api/todos/' + clickedId;
-    $.ajax({
-        method: 'DELETE',
-        url: deleteUrl
-    })
-    .then(function(data) {
-        todo.remove();
-    })
-    .catch(function(err) {
-        console.log(err);
-    });
+	var clickedId = $(this).parent().data('id');
+	var deleteUrl = '/api/todos/' + clickedId;
+	$(this).parent().remove();
+	$.ajax({
+		method: 'DELETE',
+		url: deleteUrl
+	})
+	.then(function(data){
+		todo.remove();
+	})
+	.then(function(err){
+		console.log(err);
+	});
 }
 
 function updateTodo(todo) {
