@@ -12,18 +12,18 @@ $(document).ready(function() {
     });
 
 	
-//     $('.list').on('click', 'li', function() {
-//         updateTodo($(this));
-//     });
+    $('.list').on('click', 'li', function(){
+        updateTodo($(this));
+    });
 
-	// event delegation
-	// spans are not loaded on document.ready
-	// list is, attach to list
+	// event delegation: spans are not loaded on document.ready
+	// attach to list which is always pre-loaded
     $('.list').on('click', 'span', function(e) {
         console.log("Span CLICKED!");
 		
-		// e.stopPropagation();
-        removeTodo($(this).parent());
+		// event bubbling: prevent parent 'li' from triggering
+		e.stopPropagation();
+		removeTodo($(this).parent());
     });
 });
 
@@ -63,10 +63,26 @@ function createTodo() {
 	} 
 }
 
+function updateTodo(todo) {
+	console.log(todo.data('completed'));
+	
+	var updateUrl = '/api/todos/' + todo.data('id');
+	var isDone = !todo.data('completed');
+	var updateData = { completed: isDone };
+	$.ajax({
+	method: 'PUT',
+	url: updateUrl,
+	data: updateData
+	})
+	.then(function(updatedTodo) {
+		todo.toggleClass('done', isDone);
+		todo.data('completed', isDone);
+	});
+}
+
 function removeTodo(todo) {
-	var clickedId = $(this).parent().data('id');
+	var clickedId = todo.data('id');
 	var deleteUrl = '/api/todos/' + clickedId;
-	$(this).parent().remove();
 	$.ajax({
 		method: 'DELETE',
 		url: deleteUrl
@@ -74,23 +90,9 @@ function removeTodo(todo) {
 	.then(function(data){
 		todo.remove();
 	})
-	.then(function(err){
+	.catch(function(err){
 		console.log(err);
 	});
 }
 
-function updateTodo(todo) {
-    var updateUrl = '/api/todos/' + todo.data('id');
-    var isDone = !todo.data('completed');
-    var updateData = { completed: isDone };
-    $.ajax({
-        method: 'PUT',
-        url: updateUrl,
-        data: updateData
-    })
-    .then(function(updatedTodo) {
-        todo.toggleClass('done', isDone);
-        todo.data('completed', isDone);
-    });
-}
 
